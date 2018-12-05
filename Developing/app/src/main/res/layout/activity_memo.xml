@@ -4,12 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MemoActivity">
-    
+    tools:context=".Activity.MemoActivity">
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/main_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/Theme.AppCompat.Light.DarkActionBar"
         android:background="@color/colorPrimary">
         <TextView
             android:layout_width="wrap_content"
@@ -19,33 +20,42 @@
             android:textSize="20sp"/>
     </android.support.v7.widget.Toolbar>
 
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
     <EditText
         android:id="@+id/memo_et"
         android:layout_width="match_parent"
-        android:layout_height="312dp"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@null"
         android:gravity="top"
+        app:layout_constraintBottom_toTopOf="@+id/image_grid_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/main_toolbar" />
 
-    <ListView
-        android:id="@+id/image_list_view"
+
+    <GridView
+        android:id="@+id/image_grid_view"
         android:layout_width="match_parent"
-        android:layout_height=""
+        android:layout_height="200dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        android:numColumns="2"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView_main_menu"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent">
-
-    </ListView>
+    </GridView>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottomNavigationView_main_menu"
@@ -55,9 +65,10 @@
         app:itemIconTint="@android:color/white"
         app:itemTextColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintVertical_chainStyle="spread_inside"
-        app:menu="@menu/my_navigation_items"/>
+        app:menu="@menu/my_navigation_items" />
 
 </android.support.constraint.ConstraintLayout>

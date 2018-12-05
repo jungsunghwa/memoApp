@@ -1,4 +1,6 @@
-package hs.dgsw.kr.memoappusedsqlite;
+package hs.dgsw.kr.memoappusedsqlite.model;
+
+import android.net.Uri;
 
 import java.util.ArrayList;
 
@@ -7,7 +9,7 @@ public class Memo {
     private String title;
     private String content;
     private String date;
-    private ArrayList<String> imageList;
+    private ArrayList<Image> imageList;
 
     public int getIdx() {
         return idx;
@@ -41,11 +43,11 @@ public class Memo {
         this.content = content;
     }
 
-    public ArrayList<String> getImageList() {
+    public ArrayList<Image> getImageList() {
         return imageList;
     }
 
-    public void setImageList(ArrayList<String> imageList) {
+    public void setImageList(ArrayList<Image> imageList) {
         this.imageList = imageList;
     }
 }

@@ -4,10 +4,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
+import android.net.Uri;
 
 import java.util.ArrayList;
 
-import hs.dgsw.kr.memoappusedsqlite.Memo;
+import hs.dgsw.kr.memoappusedsqlite.model.Image;
+import hs.dgsw.kr.memoappusedsqlite.model.Memo;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "memo_app.db";
@@ -47,7 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             memo.setIdx(res.getInt(res.getColumnIndex("idx")));
             memo.setContent(res.getString(res.getColumnIndex("content")));
             memo.setDate(res.getString(res.getColumnIndex("date")));
-            memo.setTitle(res.getString(res.getColumnIndex("Title")));
+            memo.setTitle(memo.getContent());
 
             memo.setImageList(getImageListByMemoIdx(memo.getIdx()));
 
@@ -59,19 +62,113 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return memoArrayList;
     }
 
+    public Memo getMemoByIdx(int idx) {
+        final SQLiteDatabase db = this.getWritableDatabase();
+        final Cursor res = db.rawQuery("SELECT * FROM memo WHERE idx = " + idx, null);
+        Memo memo = new Memo();
+
+        while (res.moveToNext()) {
+            memo.setIdx(res.getInt(res.getColumnIndex("idx")));
+            memo.setContent(res.getString(res.getColumnIndex("content")));
+            memo.setDate(res.getString(res.getColumnIndex("date")));
+            memo.setTitle(res.getString(res.getColumnIndex("content")));
+            memo.setImageList(getImageListByMemoIdx(memo.getIdx()));
+        }
+
+        res.close();
+
+        return memo;
+    }
+    public int getLastMemoIdx() {
+        final SQLiteDatabase db = this.getWritableDatabase();
+        final Cursor res = db.rawQuery("SELECT idx FROM memo ORDER BY idx DESC LIMIT 1", null);
+        Memo memo = new Memo();
+
+        while (res.moveToNext()) {
+            memo.setIdx(res.getInt(res.getColumnIndex("idx")));
+        }
+
+        res.close();
+
+        return memo.getIdx();
+    }
+
     //메모에 삽입된 사진들을 가지고 옵니다
-    private ArrayList<String> getImageListByMemoIdx(int memoIdx) {
+    private ArrayList<Image> getImageListByMemoIdx(int memoIdx) {
         final SQLiteDatabase db = this.getWritableDatabase();
         final Cursor res = db.rawQuery("SELECT * FROM image WHERE memo_idx = " + memoIdx, null);
 
-        final ArrayList<String> imageList = new ArrayList<>();
+        final ArrayList<Image> imageList = new ArrayList<>();
 
         while (res.moveToNext()) {
-            imageList.add(res.getString(res.getColumnIndex("image")));
+            imageList.add(
+                    new Image(res.getInt(res.getColumnIndex("idx"))
+                    ,Uri.parse(res.getString(res.getColumnIndex("image"))))
+            );
         }
 
         res.close();
 
         return imageList;
+    }
+
+    public void insertMemo(Memo memo) {
+        final SQLiteDatabase db = this.getWritableDatabase();
+
+        String sql = "INSERT OR REPLACE INTO memo VALUES(?,?,?)";
+
+        final SQLiteStatement insertStmt = db.compileStatement(sql);
+
+        insertStmt.clearBindings();
+
+        insertStmt.bindLong(1, memo.getIdx());
+        insertStmt.bindString(2, memo.getContent());
+        insertStmt.bindString(3, memo.getDate());
+
+        insertStmt.executeInsert();
+    }
+
+    public void insertImageList(ArrayList<Image> imageList, int memoIdx) {
+
+        if (imageList == null) return;
+
+        final SQLiteDatabase db = this.getWritableDatabase();
+
+        String sql = "INSERT OR REPLACE INTO image VALUES(?,?,?)";
+
+        final SQLiteStatement insertStmt = db.compileStatement(sql);
+
+        for (Image image : imageList){
+            insertStmt.clearBindings();
+
+            insertStmt.bindLong(1, image.getIdx());
+            insertStmt.bindString(2, image.getUri().toString());
+            insertStmt.bindLong(3,memoIdx);
+
+            insertStmt.executeInsert();
+        }
+
+    }
+
+    public void deleteMemoByIdx(int idx) {
+        final SQLiteDatabase db = this.getWritableDatabase();
+
+        String sql = "DELETE FROM memo WHERE idx='";
+        sql += idx;
+        sql += "'";
+
+        db.execSQL(sql);
+
+        deleteImageByMemoIdx(idx);
+    }
+
+    private void deleteImageByMemoIdx(int memoIdx){
+        final SQLiteDatabase db = this.getWritableDatabase();
+
+        String sql = "DELETE FROM image WHERE memo_idx='";
+        sql += memoIdx;
+        sql += "'";
+
+        db.execSQL(sql);
     }
 }
