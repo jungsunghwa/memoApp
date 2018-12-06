@@ -86,6 +86,7 @@ public class MemoActivity extends AppCompatActivity {
         imageGirdView.setVisibility(View.VISIBLE);
       }
     } else {
+      //새로운 메모를 만든다
       memo.setIdx(databaseHelper.getLastMemoIdx() + 1);
 
       imageList = new ArrayList<>();
@@ -147,6 +148,7 @@ public class MemoActivity extends AppCompatActivity {
               return true;
 
             case R.id.action_add:
+              //content 가 비어있거나 image를 추가안했다면 저장하지 않는다
               if (memoEditText.getText().toString().isEmpty() && imageList.isEmpty()) {
 
                 AlertDialog.Builder builder1 = new AlertDialog.Builder(MemoActivity.this);
@@ -174,6 +176,7 @@ public class MemoActivity extends AppCompatActivity {
           return false;
         });
 
+    //content 가 변경되었는지 체크한다
     memoEditText.addTextChangedListener(
         new TextWatcher() {
 
@@ -209,8 +212,9 @@ public class MemoActivity extends AppCompatActivity {
 
       startActivityForResult(photoPickerIntent, 100);
     } else {
+      //변경된 사항이 있는지 검사한다
       if (isContentChanged) {
-
+        //정말 취소할지 물어본다
         AlertDialog.Builder builder = new AlertDialog.Builder(MemoActivity.this);
 
         builder
@@ -220,6 +224,7 @@ public class MemoActivity extends AppCompatActivity {
             .show();
 
       }else {
+        //변경되 사항이 없으면 종료
         finish();
       }
     }

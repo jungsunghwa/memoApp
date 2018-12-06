@@ -171,4 +171,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL(sql);
     }
+
+    public void deleteImageByIdx(int idx) {
+        final SQLiteDatabase db = this.getWritableDatabase();
+
+        String sql = "DELETE FROM image WHERE idx='";
+        sql += idx;
+        sql += "'";
+
+        db.execSQL(sql);
+    }
 }
